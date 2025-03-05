@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import b4a from 'b4a'
 
-import { createBeeWriter, createBeeReader, createCoreReader } from '../lib/bee'
+import { createBeeWriter, createBeeReader } from '../lib/bee'
 
 export default function App () {
   const [core, setCore] = useState()
@@ -11,7 +11,6 @@ export default function App () {
 
   const [inputCoreKey, setInputCoreKey] = useState('')
   const [status, setStatus] = useState('')
-  const [messsages, setMessages] = useState([])
 
   const coreKey = core ? b4a.toString(core.key, 'hex') : ''
 
@@ -43,21 +42,6 @@ export default function App () {
     setStatus('started')
   }
 
-  const onStartCoreReader = async () => {
-    if (!inputCoreKey) {
-      alert('Please enter a core key')
-      return
-    }
-    setStatus('starting...')
-    await createCoreReader({ 
-      coreKeyWriter: inputCoreKey,
-      onData: (data) => {
-        setMessages((msgs) => [...msgs, b4a.toString(data.block, 'utf8')])
-      }
-    })
-    setStatus('started')
-  }
-
   return (
     <div style={{ padding: 10, background: 'cyan' }}>
       <h1>MyApp</h1>
@@ -80,18 +64,6 @@ export default function App () {
         <textarea type='text' value={message} onChange={(evt) => setMessage(evt.currentTarget.value)} />
       </div>
       <button onClick={() => query(message)}>Query</button>
-
-      <hr />
-
-      <h2>Core Reader</h2>
-      <div>
-        <textarea type='text' value={inputCoreKey} onChange={(evt) => setInputCoreKey(evt.currentTarget.value)} />
-      </div>
-      <button onClick={onStartCoreReader}>Start core reader</button>
-      <p>Status: {status}</p>
-
-      <h3>Receive message</h3>
-      {messsages.map((msg, idx) => <p key={idx}>{msg}</p>)}
     </div>
   )
 }

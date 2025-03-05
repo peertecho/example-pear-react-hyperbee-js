@@ -69,26 +69,3 @@ export async function createBeeReader ({ name = 'reader', coreKeyWriter } = {}) 
 
   return bee
 }
-
-export async function createCoreReader ({ name = 'core-reader', coreKeyWriter, onData } = {}) {
-  console.log('starting core-reader', coreKeyWriter)
-  const store = new Corestore(path.join(Pear.config.storage, name))
-  await store.ready()
-  swarm.on('connection', (conn) => store.replicate(conn))
-
-  const core = store.get({ key: coreKeyWriter })
-  await core.ready()
-
-  console.log('joining', b4a.toString(core.discoveryKey, 'hex'))
-  const foundPeers = core.findingPeers()
-  swarm.join(core.discoveryKey)
-  swarm.on('connection', conn => core.replicate(conn))
-  swarm.flush().then(() => foundPeers())
-
-  console.log('updating')
-  await core.update()
-
-  const seq = core.length - 1
-  const block = await core.get(core.length - 1)
-  onData({ seq, block })
-}
