@@ -34,11 +34,7 @@ export async function createBeeWriter ({ name = 'writer' } = {}) {
 
   if (core.length <= 1) {
     console.log('importing dictionary...')
-    const clientId = JSON.parse(Pear.argv[Pear.argv.length - 1]).id
-    const filePath = 'dict.json'
-    const dict = await fetch(`${window.location.origin}/${filePath}`, {
-      headers: { 'User-Agent': `Pear ${clientId}` }
-    }).then(res => res.json())
+    const dict = await fetch(`${window.location.origin}/dict.json`).then(res => res.json())
     const batch = bee.batch()
     for (const { key, value } of dict) {
       await batch.put(key, value)
