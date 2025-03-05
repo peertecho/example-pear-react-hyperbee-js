@@ -70,7 +70,7 @@ export async function createBeeReader ({ name = 'reader', coreKeyWriter } = {}) 
   return bee
 }
 
-export async function createCoreReader ({ name = 'core-reader', coreKeyWriter } = {}) {
+export async function createCoreReader ({ name = 'core-reader', coreKeyWriter, onData } = {}) {
   console.log('starting core-reader', coreKeyWriter)
   const store = new Corestore(path.join(Pear.config.storage, name))
   await store.ready()
@@ -89,8 +89,6 @@ export async function createCoreReader ({ name = 'core-reader', coreKeyWriter } 
   await core.update()
 
   const seq = core.length - 1
-  const lastBlock = await core.get(core.length - 1)
-
-  console.log(`Raw Block ${seq}:`, lastBlock)
-  console.log(`Decoded Block ${seq}`, Node.decode(lastBlock))
+  const block = await core.get(core.length - 1)
+  onData({ seq, block })
 }

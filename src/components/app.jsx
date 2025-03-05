@@ -11,6 +11,7 @@ export default function App () {
 
   const [inputCoreKey, setInputCoreKey] = useState('')
   const [status, setStatus] = useState('')
+  const [messsages, setMessages] = useState([])
 
   const coreKey = core ? b4a.toString(core.key, 'hex') : ''
 
@@ -48,7 +49,12 @@ export default function App () {
       return
     }
     setStatus('starting...')
-    await createCoreReader({ coreKeyWriter: inputCoreKey })
+    await createCoreReader({ 
+      coreKeyWriter: inputCoreKey,
+      onData: (data) => {
+        setMessages((msgs) => [...msgs, b4a.toString(data.block, 'utf8')])
+      }
+    })
     setStatus('started')
   }
 
@@ -83,6 +89,9 @@ export default function App () {
       </div>
       <button onClick={onStartCoreReader}>Start core reader</button>
       <p>Status: {status}</p>
+
+      <h3>Receive message</h3>
+      {messsages.map((msg, idx) => <p key={idx}>{msg}</p>)}
     </div>
   )
 }
