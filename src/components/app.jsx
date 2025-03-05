@@ -11,6 +11,7 @@ export default function App () {
 
   const [inputCoreKey, setInputCoreKey] = useState('')
   const [status, setStatus] = useState('')
+  const [output, setOutput] = useState('')
 
   const coreKey = core ? b4a.toString(core.key, 'hex') : ''
 
@@ -21,9 +22,8 @@ export default function App () {
       return
     }
     const node = await bee.get(word)
-    if (!node?.value) console.log(`No dictionary entry for ${word}`)
-    else console.log(`${word} -> ${node.value}`)
-    setImmediate(console.log) // flush hack
+    if (!node?.value) setOutput(`No dictionary entry for ${word}`)
+    else setOutput(`${word} -> ${node.value}`)
   }
 
   const onStartWriter = async () => {
@@ -64,6 +64,9 @@ export default function App () {
         <textarea type='text' value={message} onChange={(evt) => setMessage(evt.currentTarget.value)} />
       </div>
       <button onClick={() => query(message)}>Query</button>
+
+      <h3>Output</h3>
+      <p>{output}</p>
     </div>
   )
 }

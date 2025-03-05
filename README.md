@@ -26,4 +26,4 @@ npm run dev
   - copy the above core key into the reader input box
   - click Start reader
   - wait for started
-- Go back to first app, send a message, the second app will receive it
+  - query a message: `triple` (found), `foo` (not found)
