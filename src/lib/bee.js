@@ -18,6 +18,7 @@ export async function createBeeWriter ({ name = 'writer' } = {}) {
   console.log('starting writer')
   const store = new Corestore(path.join(Pear.config.storage, name))
   await store.ready()
+  swarm.on('connection', conn => store.replicate(conn))
 
   const core = store.get({ name })
   await core.ready()
