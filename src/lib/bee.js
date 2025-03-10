@@ -17,18 +17,20 @@ teardown(() => swarm.destroy())
 export async function createBeeWriter ({ name = 'writer' } = {}) {
   console.log('starting writer')
   const store = new Corestore(path.join(Pear.config.storage, name))
+  teardown(() => store.close())
   await store.ready()
   swarm.on('connection', conn => store.replicate(conn))
 
   const core = store.get({ name })
+  teardown(() => core.close())
   await core.ready()
 
   const bee = new Hyperbee(core, {
     keyEncoding: 'utf-8',
     valueEncoding: 'utf-8'
   })
+  teardown(() => bee.close())
 
-  console.log('joining', b4a.toString(core.discoveryKey, 'hex'))
   const discovery = swarm.join(core.discoveryKey)
   await discovery.flushed()
 
@@ -50,18 +52,22 @@ export async function createBeeWriter ({ name = 'writer' } = {}) {
 export async function createBeeReader ({ name = 'reader', coreKeyWriter } = {}) {
   console.log('starting reader', coreKeyWriter)
   const store = new Corestore(path.join(Pear.config.storage, name))
+  teardown(() => store.close())
   await store.ready()
   swarm.on('connection', (conn) => store.replicate(conn))
 
   const core = store.get({ key: coreKeyWriter })
+  teardown(() => core.close())
   await core.ready()
 
   const bee = new Hyperbee(core, {
     keyEncoding: 'utf-8',
     valueEncoding: 'utf-8'
   })
+  teardown(() => bee.close())
 
   swarm.join(core.discoveryKey)
+  swarm.flush()
 
   return bee
 }
