@@ -32,7 +32,7 @@ export async function createBeeWriter ({ name = 'writer' } = {}) {
   teardown(() => bee.close())
 
   swarm.join(core.discoveryKey)
-  swarm.flush()
+  await swarm.flush()
 
   if (core.length <= 1) {
     console.log('importing dictionary...')
@@ -66,9 +66,8 @@ export async function createBeeReader ({ name = 'reader', coreKeyWriter } = {}) 
   })
   teardown(() => bee.close())
 
-  const done = core.findingPeers()
   swarm.join(core.discoveryKey)
-  swarm.flush().then(done, done)
+  await swarm.flush()
 
   return bee
 }
